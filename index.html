@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000; /* Dark background color */
+            color: #ffffff; /* Font color */
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 5px;
+            width: calc(100% - 10px);
+        }
+
+        .container h1 {
+            margin: 20px 0; /* increased top margin */
+            text-align: center;
+            font-size: 30px; /* increased font size */
+            font-weight: 700; /* increased font weight */
+        }
+
+        .section {
+            border: 1px solid #230c47; /* Darker border color */
+            border-radius: 5px;
+            padding: 20px;
+            background: #211f24; /* Dark background color */
+            box-shadow: 0 0 8px #6512e1; /* Light shadow */
+        }
+
+        .section1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .section1 div {
+            margin: 5px;
+        }
+
+        .section1 div:first-child input {
+            max-width: 150px;
+            text-align: left;
+        }
+
+        .section1 select {
+            width: 100%;
+            font-size: 1rem;
+            padding: 8px 4px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #ffffff; /* Font color */
+            outline: none;
+            background-color: #444444; /* Dark background color */
+            background-clip: padding-box;
+            border: 1px solid #555555; /* Darker border color */
+            border-radius: 0.25rem;
+        }
+
+        .section1 div:nth-child(2) input {
+            max-width: 90px;
+            text-align: left;
+        }
+
+        .section1 div:nth-child(3) {
+            width: 50px;
+            text-align: left;
+        }
+
+        .section1 div:nth-child(4) {
+            width: 60px;
+            text-align: left;
+        }
+
+        .section1 p {
+            margin: 5px 5px 5px 0px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            font-size: 1rem;
+            padding: 6px 10px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #ffffff; /* Font color */
+            outline: none;
+            background-color: #444444; /* Dark background color */
+            background-clip: padding-box;
+            border: 1px solid #555555; /* Darker border color */
+            border-radius: 0.25rem;
+        }
+
+        .section button {
+            padding: 9.5px;
+            outline: none;
+            background-color: #333333; /* Dark background color */
+            color: #ffffff; /* Custom color for button text */
+            border: 1px solid #6c0bff; /* Custom border color */
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.5s all;
+        }
+
+        .section button:hover {
+            color: #000000; /* Font color on hover */
+            background-color: #6c0bff; /* Custom background color on hover */
+            border-color: #6c0bff; /* Custom border color on hover */
+            border-width: 1px;
+        }
+
+        .section2 table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .section2 th, .section2 td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .section2 th {
+            background-color: #2c2c2c; /* Darker background color for table headers */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section" style="margin-top: 50px;">
+            <h1 style="color: rgb(154, 12, 255); ">GPA Calculator</h1>
+            <div class="section1" id="courseForm">
+                <div>
+                    <p>Course</p>
+                    <input type="text" id="courseName">
+                </div>
+                <div>
+                    <p>Credits</p>
+                    <input type="number" id="creditHours">
+                </div>
+                <div>
+                    <p>Grade</p>
+                    <select id="grade">
+                        <option value="O">O</option>
+                        <option value="A+">A+</option>
+                        <option value="A">A</option>
+                        <option value="B+">B+</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select>
+                </div>
+                <div>
+                    <p style="opacity: 0">-</p>
+                    <button onclick="handleAddCourse()">Add</button>
+                </div>
+            </div>
+        </div>
+        <div class="section"  style="margin-top: 50px;">
+            <div class="section2" id="courseList">
+                <div>
+                    <center><h2>Course List</h2></center>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody"></tbody>
+                    </table>
+                </div>
+                <div>
+                    <center><h3 id="gpa" style="color: rgb(154, 12, 255); ">GPA: 0.00</h3></center> 
+                </div>
+            </div>
+        </div>
+    </div>
+<script >
+   
+const gradePoints = {
+    'O':10.0,
+    'A+': 9.0,
+    'A': 8.0,
+    'B+': 7.0,
+    'B': 6.0,
+    'C': 5.0,
+};
+
+let editIndex = -1;
+
+const courses = [];
+function handleAddCourse() {
+    const courseName = document.getElementById('courseName').value.toLowerCase();
+    const creditHours = parseInt(document.getElementById('creditHours').value);
+    const grade = document.getElementById('grade').value;
+
+    if (creditHours < 0) {
+        alert('Credit points must be a positive number.');
+        return;
+    }
+
+    const courseExists = courses.some(course => course.courseName.toLowerCase() === courseName);
+
+    if (courseExists) {
+        alert('This course already exists.');
+        return;
+    }
+
+    if (courseName && grade) {
+        const newCourse = {
+            courseName,
+            creditHours,
+            grade
+        };
+
+        if (editIndex === -1) {
+            courses.push(newCourse);
+        } else {
+            courses[editIndex] = newCourse;
+            editIndex = -1;
+        }
+
+        updateCourseList();
+        calculateGPA();
+        document.getElementById('courseName').value = '';
+        document.getElementById('creditHours').value = '';
+        document.getElementById('grade').value = 'O';
+    } else {
+        alert('Please enter valid course details.');
+    }
+}
+
+
+function editCourse(index) {
+    const course = courses[index];
+    document.getElementById('courseName').value = course.courseName;
+    document.getElementById('creditHours').value = course.creditHours;
+    document.getElementById('grade').value = course.grade;
+    editIndex = index;
+}
+
+function deleteCourse(index) {
+    courses.splice(index, 1);
+    updateCourseList();
+    calculateGPA();
+}
+
+function updateCourseList() {
+    const courseTableBody = document.getElementById('courseTableBody');
+    courseTableBody.innerHTML = '';
+
+    courses.forEach((course, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${course.courseName}</td>
+            <td>${course.creditHours}</td>
+            <td>${course.grade}</td>
+            <td>
+                <button onclick="editCourse(${index})">Edit</button>
+                <button onclick="deleteCourse(${index})">Delete</button>
+            </td>
+        `;
+        courseTableBody.appendChild(tr);
+    });
+}
+
+function calculateGPA() {
+    const totalGradePoints = courses.reduce((acc, course) => acc + gradePoints[course.grade] * course.creditHours, 0);
+    const totalCreditHours = courses.reduce((acc, course) => acc + course.creditHours, 0);
+    const gpa = totalCreditHours === 0 ? 0 : totalGradePoints / totalCreditHours;
+
+    document.getElementById('gpa').textContent = `GPA: ${gpa.toFixed(2)}`;
+}
+ 
+</script>
+</body>
+</html>
